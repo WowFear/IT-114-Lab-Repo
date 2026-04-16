@@ -1,0 +1,12 @@
+
+[Executed at: Wed Feb 4 14:14:56 PST 2026]
+
+../resource/scripts/grade.sh: line 2: $'\r': command not found
+../resource/scripts/grade.sh: line 6: $'\r': command not found
+error: invalid flag: Grader.java
+Usage: javac <options> <source files>
+use --help for a list of possible options
+../resource/scripts/grade.sh: line 9: $'\r': command not found
+../resource/scripts/grade.sh: line 15: syntax error near unexpected token `fi'
+../resource/scripts/grade.sh: line 15: `fi'
+Command exited with non-zero status 1
