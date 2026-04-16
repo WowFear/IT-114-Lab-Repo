@@ -1,0 +1,136 @@
+/*Lab 02 Grader Class (Read Only)
+This class will grade the assignment out of 40 points.
+The purpose of letting students see this file is the check how the autotests are grading in the event that they are malfunctioning.
+Editing this file will not affect the autograder.
+*/
+
+import java.lang.reflect.Modifier;
+
+public class Grader {
+    
+    // Total score tracker for this execution
+    static int currentScore = 0;
+
+    public static void main(String[] args) {
+        String testType = "all";
+        if (args.length > 0) {
+            testType = args[0].toLowerCase();
+        }
+
+        System.out.println("--- Executing Test: " + testType + " ---");
+
+        try {
+            switch (testType) {
+                case "checking":
+                    testCheckingOverdraft();
+                    break;
+                case "savings":
+                    testSavingsLimit();
+                    break;
+                case "deposit":
+                    testDeposit();
+                    break;
+                case "encapsulation":
+                    testEncapsulation();
+                    break;
+                case "all":
+                default:
+                    // Run all tests sequentially
+                    testCheckingOverdraft();
+                    testSavingsLimit();
+                    testDeposit();
+                    testEncapsulation();
+                    break;
+            }
+        } catch (Exception e) {
+            System.out.println("[CRITICAL ERROR] Test execution failed due to exception: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Output the score in a format Vocareum can parse
+        System.out.println("\nFinal Score for this run: " + currentScore);
+        System.out.println("Vscore: " + currentScore); 
+    }
+
+    // --- Modularized Test Cases ---
+
+    // Test 1: Checking Account Overdraft Logic (10 pts)
+    public static void testCheckingOverdraft() {
+        try {
+            CheckingAccount checking = new CheckingAccount("TestUser", 100.0);
+            checking.withdraw(150.0);
+            
+            // Expected: 100 - 150 - 35 = -85.0
+            if (Math.abs(checking.getBalance() - (-85.0)) < 0.01) { 
+                System.out.println("[PASS] Checking Account Overdraft logic (10/10)");
+                currentScore += 10;
+            } else {
+                System.out.println("[FAIL] Checking Account Overdraft logic.");
+                System.out.println("       Expected: -85.0");
+                System.out.println("       Actual:   " + checking.getBalance());
+            }
+        } catch (Exception e) {
+            System.out.println("[FAIL] Checking Account crashed during test: " + e);
+        }
+    }
+
+    // Test 2: Savings Account Hard Limit (10 pts)
+    public static void testSavingsLimit() {
+        try {
+            SavingsAccount savings = new SavingsAccount("TestUser", 100.0);
+            savings.withdraw(150.0);
+            
+            // Expected: Balance remains 100.0 because withdrawal should be denied
+            if (Math.abs(savings.getBalance() - 100.0) < 0.01) {
+                System.out.println("[PASS] Savings Account Limit logic (10/10)");
+                currentScore += 10;
+            } else {
+                System.out.println("[FAIL] Savings Account allowed withdrawal over balance.");
+                System.out.println("       Expected: 100.0");
+                System.out.println("       Actual:   " + savings.getBalance());
+            }
+        } catch (Exception e) {
+            System.out.println("[FAIL] Savings Account crashed during test: " + e);
+        }
+    }
+
+    // Test 3: Standard Deposit (10 pts)
+    public static void testDeposit() {
+        try {
+            // We use SavingsAccount to test deposit, but it inherits from BankAccount
+            SavingsAccount savings = new SavingsAccount("TestUser", 100.0);
+            savings.deposit(50.0);
+            
+            if (Math.abs(savings.getBalance() - 150.0) < 0.01) {
+                System.out.println("[PASS] Deposit logic (10/10)");
+                currentScore += 10;
+            } else {
+                System.out.println("[FAIL] Deposit logic incorrect.");
+                System.out.println("       Expected: 150.0");
+                System.out.println("       Actual:   " + savings.getBalance());
+            }
+        } catch (Exception e) {
+            System.out.println("[FAIL] Deposit test crashed: " + e);
+        }
+    }
+
+    // Test 4: Encapsulation Check (10 pts)
+    public static void testEncapsulation() {
+        try {
+            boolean isPrivate = Modifier.isPrivate(
+                BankAccount.class.getDeclaredField("balance").getModifiers());
+            
+            if (isPrivate) {
+                System.out.println("[PASS] Encapsulation: balance is private (10/10)");
+                currentScore += 10;
+            } else {
+                System.out.println("[FAIL] Encapsulation check.");
+                System.out.println("       The 'balance' variable in BankAccount must be private.");
+            }
+        } catch (NoSuchFieldException e) {
+             System.out.println("[FAIL] Could not find variable 'balance'. Check naming.");
+        } catch (Exception e) {
+            System.out.println("[FAIL] Encapsulation test crashed: " + e);
+        }
+    }
+}
